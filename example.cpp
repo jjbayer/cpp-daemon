@@ -1,12 +1,10 @@
-# cppdaemon
-Simple daemon class to run periodical tasks in background
 
-## Example
+#include "daemon.hpp"
 
-See [example.cpp](./example.cpp).
+#include <iomanip>
+#include <iostream>
 
-```c++
-/// Class to print time every second
+
 class TimeLogger: public Daemon
 {
     virtual void task() override
@@ -15,4 +13,17 @@ class TimeLogger: public Daemon
         std::cout << "The current time is " << std::put_time(std::localtime(&now), "%c %Z") << std::endl;
     }
 };
-```
+
+
+int main()
+{
+    TimeLogger daemon;
+
+    daemon.start();
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(2500));
+
+    daemon.stop();
+
+    return 0;
+}
