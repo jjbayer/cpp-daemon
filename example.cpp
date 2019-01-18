@@ -5,25 +5,34 @@
 #include <iostream>
 
 
-class TimeLogger: public Daemon
+class SlowDaemon: public Daemon
 {
+
+public:
+    ~SlowDaemon() { alive_ = false; }
+
+private:
+    bool alive_ = true;
+
     virtual void task() override
     {
-        const auto now = std::time(nullptr);
-        std::cout << "The current time is " << std::put_time(std::localtime(&now), "%c %Z") << std::endl;
+        std::cout << "Begin task. Alive = " << alive_ << std::endl;
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        std::cout << "End task. Alive = " << alive_ << std::endl;
     }
+
 };
 
 
 int main()
 {
-    TimeLogger daemon;
+    {
+        SlowDaemon daemon;
+        daemon.start();
+        std::this_thread::sleep_for(std::chrono::milliseconds(1750));
+    }
 
-    daemon.start();
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(2500));
-
-    daemon.stop();
+    std::this_thread::sleep_for(std::chrono::milliseconds(3000));
 
     return 0;
 }
